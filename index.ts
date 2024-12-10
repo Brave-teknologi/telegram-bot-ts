@@ -1,13 +1,6 @@
 import { bot } from "./bot";
 import crypto from "crypto";
 
-const webhook = async () => {
-   if (!process.env.WEB_URL) {
-      throw Error("No web url specified");
-   }
-   await bot.createWebhook({ domain: process.env.WEB_URL });
-};
-
 if (process.env.NODE_ENV == "development") {
    // Start the bot
    console.log("Bot is running..");
