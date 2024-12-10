@@ -1,4 +1,5 @@
 import { bot } from "./bot";
+import crypto from "crypto";
 
 const webhook = async () => {
    if (!process.env.WEB_URL) {
@@ -32,8 +33,7 @@ if (process.env.NODE_ENV == "development") {
          port: port as number,
 
          // Optional secret to be sent back in a header for security.
-         // e.g.: `crypto.randomBytes(64).toString("hex")`
-         secretToken: "coba123",
+         secretToken: crypto.randomBytes(16).toString("hex"),
       },
    });
 }
