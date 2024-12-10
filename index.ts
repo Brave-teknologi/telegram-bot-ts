@@ -1,5 +1,5 @@
 import { Telegraf } from "telegraf";
-import { loggerMiddleware } from "./middleware";
+import { errorMiddleware, loggerMiddleware } from "./middleware";
 import { registerCommands } from "./routes/commandRoutes";
 import { registerHandlers } from "./routes/handlerRoutes";
 
@@ -15,6 +15,8 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // Use middleware
 bot.use(loggerMiddleware);
+
+bot.catch(errorMiddleware);
 
 // Register commands and handlers
 registerCommands(bot);

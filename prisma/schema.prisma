@@ -15,9 +15,10 @@ datasource db {
 
 model User {
   id           Int      @id @default(autoincrement())
-  telegramId   String
+  telegramId   String   @unique
   name         String
   username     String
+  avatar       String   @default("avatar.png")
   banned       Boolean  @default(false)
   registeredAt DateTime @default(now())
 }
