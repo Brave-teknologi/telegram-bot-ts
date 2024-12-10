@@ -1,11 +1,9 @@
-import { session, SessionStore, Telegraf } from "telegraf";
-import { Redis } from "@telegraf/session/redis";
+import { Telegraf } from "telegraf";
 import { errorMiddleware, loggerMiddleware } from "./middleware";
 import { registerCommands } from "./routes/commandRoutes";
 import { registerHandlers } from "./routes/handlerRoutes";
 
 import dotenv from "dotenv";
-import { testStage } from "./scenes/test";
 import { WizardContext, WizardSessionData } from "telegraf/typings/scenes";
 import { registerScenes } from "./routes/sceneRoutes";
 dotenv.config();

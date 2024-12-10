@@ -1,5 +1,4 @@
 import { Context, MiddlewareFn } from "telegraf";
-import { MaybePromise } from "telegraf/typings/core/helpers/util";
 import { Update } from "telegraf/typings/core/types/typegram";
 
 export const loggerMiddleware: MiddlewareFn<Context> = async (ctx, next) => {
