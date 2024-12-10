@@ -1,9 +1,13 @@
-import { Telegraf } from "telegraf";
+import { session, SessionStore, Telegraf } from "telegraf";
+import { Redis } from "@telegraf/session/redis";
 import { errorMiddleware, loggerMiddleware } from "./middleware";
 import { registerCommands } from "./routes/commandRoutes";
 import { registerHandlers } from "./routes/handlerRoutes";
 
 import dotenv from "dotenv";
+import { testStage } from "./scenes/test";
+import { WizardContext, WizardSessionData } from "telegraf/typings/scenes";
+import { registerScenes } from "./routes/sceneRoutes";
 dotenv.config();
 
 if (!process.env.BOT_TOKEN) {
@@ -11,14 +15,16 @@ if (!process.env.BOT_TOKEN) {
 }
 
 // Initialize the bot
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf<WizardContext<WizardSessionData>>(
+   process.env.BOT_TOKEN
+);
 
 // Use middleware
 bot.use(loggerMiddleware);
-
 bot.catch(errorMiddleware);
 
-// Register commands and handlers
+// Register commands, handlers and scenes
+registerScenes(bot);
 registerCommands(bot);
 registerHandlers(bot);
 
