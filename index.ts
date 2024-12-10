@@ -1,35 +1,39 @@
-import { Telegraf } from "telegraf";
-import { errorMiddleware, loggerMiddleware } from "./middleware";
-import { registerCommands } from "./routes/commandRoutes";
-import { registerHandlers } from "./routes/handlerRoutes";
+import { bot } from "./bot";
 
-import dotenv from "dotenv";
-import { WizardContext, WizardSessionData } from "telegraf/typings/scenes";
-import { registerScenes } from "./routes/sceneRoutes";
-dotenv.config();
+const webhook = async () => {
+   if (!process.env.WEB_URL) {
+      throw Error("No web url specified");
+   }
+   await bot.createWebhook({ domain: process.env.WEB_URL });
+};
 
-if (!process.env.BOT_TOKEN) {
-   throw Error("Bot token not configured");
+if (process.env.NODE_ENV == "development") {
+   // Start the bot
+   console.log("Bot is running..");
+   bot.launch();
+
+   // Graceful stop for SIGINT/SIGTERM
+   process.once("SIGINT", () => bot.stop("SIGINT"));
+   process.once("SIGTERM", () => bot.stop("SIGTERM"));
+} else {
+   const port = process.env.PORT ?? 8000;
+
+   if (!process.env.WEB_URL) {
+      throw Error("No web url specified");
+   }
+
+   console.log("Listening on port", port);
+   bot.launch({
+      webhook: {
+         // Public domain for webhook; e.g.: example.com
+         domain: process.env.WEB_URL,
+
+         // Port to listen on; e.g.: 8080
+         port: port as number,
+
+         // Optional secret to be sent back in a header for security.
+         // e.g.: `crypto.randomBytes(64).toString("hex")`
+         secretToken: "coba123",
+      },
+   });
 }
-
-// Initialize the bot
-const bot = new Telegraf<WizardContext<WizardSessionData>>(
-   process.env.BOT_TOKEN
-);
-
-// Use middleware
-bot.use(loggerMiddleware);
-bot.catch(errorMiddleware);
-
-// Register commands, handlers and scenes
-registerScenes(bot);
-registerCommands(bot);
-registerHandlers(bot);
-
-// Start the bot
-console.log("Bot is running..");
-bot.launch();
-
-// Graceful stop for SIGINT/SIGTERM
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
