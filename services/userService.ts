@@ -1,9 +1,7 @@
 import { Context } from "telegraf";
 import { IUserService } from "./interfaces/IUserService";
 import { PrismaClient } from "@prisma/client";
-import path from "path";
-import https from "https";
-import fs from "fs";
+import { downloadPhoto } from "../modules/utils";
 
 export class UserService implements IUserService {
    private prisma: PrismaClient;
@@ -31,7 +29,7 @@ export class UserService implements IUserService {
       const photoUrl = await this.fetchPhotoProfile(ctx, user.id);
 
       if (photoUrl) {
-         this.downloadPhoto(photoUrl, user.id);
+         downloadPhoto(photoUrl, user.id);
       }
 
       const fullName = user.first_name ?? "user" + user.last_name ?? "";
@@ -59,18 +57,5 @@ export class UserService implements IUserService {
       const fileUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
 
       return fileUrl;
-   }
-
-   downloadPhoto(url: string, id: number): void {
-      const img = fs.createWriteStream(
-         path.join(__dirname, "../", "public", "avatars", `${id}.jpg`)
-      );
-      https.get(url, function (response) {
-         response.pipe(img);
-
-         img.on("finish", () => {
-            img.close();
-         });
-      });
    }
 }
